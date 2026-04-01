@@ -20,6 +20,8 @@ class MemberListItem extends StatelessWidget {
         return _SelectableItem(member: member, onTap: onTap);
       case MemberStatus.alreadyRegistered:
         return _AlreadyRegisteredItem(member: member);
+      case MemberStatus.verificationPending:
+        return _VerificationPendingItem(member: member, onTap: onTap);
     }
   }
 }
@@ -241,6 +243,80 @@ class _AlreadyRegisteredItem extends StatelessWidget {
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF4ADE80),
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _VerificationPendingItem extends StatelessWidget {
+  final FamilyMemberModel member;
+  final VoidCallback? onTap;
+
+  const _VerificationPendingItem({required this.member, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AuthColors.of(context);
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(_kCardRadius),
+          border: Border.all(color: const Color(0xFFF59E0B).withAlpha(80)),
+        ),
+        child: Row(
+          children: [
+            _MemberAvatar(imageUrl: member.imageUrl, size: _kAvatarSize),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    member.name,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: colors.onSurface,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Tap to complete verification',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF59E0B).withAlpha(30),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: const Color(0xFFF59E0B).withAlpha(100),
+                ),
+              ),
+              child: const Text(
+                'Verification\nPending',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFFF59E0B),
                   letterSpacing: 0.5,
                 ),
               ),

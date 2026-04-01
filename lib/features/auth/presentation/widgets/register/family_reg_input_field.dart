@@ -5,14 +5,12 @@ class FamilyRegInputField extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final bool isFocused;
-  final String? errorText;
 
   const FamilyRegInputField({
     super.key,
     required this.controller,
     required this.focusNode,
     required this.isFocused,
-    this.errorText,
   });
 
   @override
@@ -73,7 +71,6 @@ class FamilyRegInputField extends StatelessWidget {
                     border: InputBorder.none,
                     isCollapsed: true,
                     contentPadding: const EdgeInsets.symmetric(vertical: 20),
-                    errorText: errorText,
                   ),
                 ),
               ),
@@ -81,18 +78,6 @@ class FamilyRegInputField extends StatelessWidget {
             ],
           ),
         ),
-        if (errorText != null && errorText!.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(left: 22, top: 6),
-            child: Text(
-              errorText!,
-              style: TextStyle(
-                color: Colors.red[700],
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
         const SizedBox(height: 12),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,

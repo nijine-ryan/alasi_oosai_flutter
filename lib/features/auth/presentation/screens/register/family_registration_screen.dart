@@ -8,6 +8,7 @@ import 'package:alai_oosai/features/auth/presentation/screens/register/family_me
 import 'package:alai_oosai/features/auth/data/village_service.dart';
 import 'package:alai_oosai/features/auth/data/family_registration_service.dart';
 import 'package:alai_oosai/features/auth/data/village_model.dart';
+import 'package:alai_oosai/features/auth/presentation/widgets/shared/auth_error_snack_bar.dart';
 
 class FamilyRegistrationScreen extends StatefulWidget {
   const FamilyRegistrationScreen({super.key});
@@ -25,7 +26,6 @@ class FamilyRegistrationScreenState extends State<FamilyRegistrationScreen> {
   List<VillageModel>? _apiVillages;
   bool _isLoadingVillages = true;
   bool _isVerifying = false;
-  String? _fieldError;
 
   @override
   void initState() {
@@ -51,9 +51,7 @@ class FamilyRegistrationScreenState extends State<FamilyRegistrationScreen> {
             setState(() => _isLoadingVillages = false);
             final ms = err?.toString() ?? 'Failed to load villages.';
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(ms)));
+              if (mounted) AuthErrorSnackBar.show(context, ms);
             });
           }
         });
@@ -85,10 +83,7 @@ class FamilyRegistrationScreenState extends State<FamilyRegistrationScreen> {
 
   void _onVerify() async {
     if (!_canSubmit || _isVerifying) return;
-    setState(() {
-      _isVerifying = true;
-      _fieldError = null;
-    });
+    setState(() => _isVerifying = true);
     final villageId = _selectedVillageId;
     final regNum = _regController.text.trim();
     try {
@@ -98,7 +93,6 @@ class FamilyRegistrationScreenState extends State<FamilyRegistrationScreen> {
       );
       if (!mounted) return;
       if (result.success) {
-        // Success: navigate to next page (pass id if needed)
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -109,17 +103,14 @@ class FamilyRegistrationScreenState extends State<FamilyRegistrationScreen> {
           ),
         );
       } else {
-        setState(() {
-          _fieldError =
-              result.fieldErrors?['family_card_number']?.join(' ') ??
-              result.message;
-        });
+        final msg =
+            result.fieldErrors?['family_card_number']?.join(' ') ??
+            result.message;
+        AuthErrorSnackBar.show(context, msg);
       }
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _fieldError = 'Server error. Please try again.';
-      });
+      AuthErrorSnackBar.show(context, 'Server error. Please try again.');
     } finally {
       if (mounted) setState(() => _isVerifying = false);
     }
@@ -151,7 +142,6 @@ class FamilyRegistrationScreenState extends State<FamilyRegistrationScreen> {
                       villages: villages,
                       isLoading: _isLoadingVillages,
                       isVerifying: _isVerifying,
-                      errorText: _fieldError,
                       onVerify: _onVerify,
                       onVillageChanged: (v) {
                         setState(() => _selectedVillageId = v);

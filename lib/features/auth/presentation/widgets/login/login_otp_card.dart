@@ -1,26 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:alai_oosai/features/auth/data/auth_colors.dart';
+import 'package:alai_oosai/features/auth/data/auth_service.dart';
 import 'package:alai_oosai/features/auth/presentation/widgets/shared/auth_submit_button.dart';
 import 'package:alai_oosai/features/auth/presentation/widgets/shared/otp_input_grid.dart';
 import 'package:alai_oosai/features/auth/presentation/widgets/shared/otp_resend_row.dart';
 import 'package:alai_oosai/features/auth/presentation/widgets/login/login_encrypted_badge.dart';
+import 'package:alai_oosai/features/auth/presentation/widgets/shared/auth_error_snack_bar.dart';
 
 /// OTP verification card for the login flow.
-/// Reuses OtpInputGrid and OtpResendRow from shared widgets.
-/// Contains: OTP label, 6-digit grid, Verify button,
-///           resend row, encrypted badge, "Contact Security Desk" link.
+/// Collects OTP, calls /auth/verify-otp, and invokes [onVerifySuccess] on success.
 
-class LoginOtpCard extends StatelessWidget {
-  final VoidCallback onVerify;
+class LoginOtpCard extends StatefulWidget {
+  final String phoneNumber;
+  final VoidCallback onVerifySuccess;
   final VoidCallback onResend;
   final VoidCallback onContactSupport;
 
   const LoginOtpCard({
     super.key,
-    required this.onVerify,
+    required this.phoneNumber,
+    required this.onVerifySuccess,
     required this.onResend,
     required this.onContactSupport,
   });
+
+  @override
+  State<LoginOtpCard> createState() => _LoginOtpCardState();
+}
+
+class _LoginOtpCardState extends State<LoginOtpCard> {
+  String _otp = '';
+  bool _isLoading = false;
+
+  Future<void> _onVerify() async {
+    if (_otp.length != 6) {
+      AuthErrorSnackBar.show(context, 'Please enter the 6-digit OTP.');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      await AuthService.verifyLoginOtp(
+        phoneNumber: widget.phoneNumber,
+        otp: int.parse(_otp),
+      );
+      if (!mounted) return;
+      widget.onVerifySuccess();
+    } catch (e) {
+      if (!mounted) return;
+      AuthErrorSnackBar.show(
+        context,
+        e.toString().replaceFirst('Exception: ', ''),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,25 +89,27 @@ class LoginOtpCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            // 6-digit OTP grid — reused from shared widgets
-            OtpInputGrid(onCompleted: (otp) => debugPrint('Login OTP: $otp')),
+            // 6-digit OTP grid
+            OtpInputGrid(onCompleted: (otp) => setState(() => _otp = otp)),
             const SizedBox(height: 32),
             // Verify button
-            AuthSubmitButton(
-              label: 'Verify OTP',
-              trailingIcon: Icons.shield_outlined,
-              onTap: onVerify,
-            ),
+            _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : AuthSubmitButton(
+                    label: 'Verify OTP',
+                    trailingIcon: Icons.shield_outlined,
+                    onTap: _onVerify,
+                  ),
             const SizedBox(height: 24),
-            // Resend row — reused from shared widgets
-            OtpResendRow(onResend: onResend),
+            // Resend row
+            OtpResendRow(onResend: widget.onResend),
             const SizedBox(height: 20),
             // Encrypted session badge
             const LoginEncryptedBadge(),
             const SizedBox(height: 24),
             // Contact security desk
             GestureDetector(
-              onTap: onContactSupport,
+              onTap: widget.onContactSupport,
               child: RichText(
                 textAlign: TextAlign.center,
                 text: const TextSpan(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:alai_oosai/features/auth/data/auth_colors.dart';
+import 'package:alai_oosai/features/auth/data/auth_service.dart';
 import 'package:alai_oosai/features/auth/presentation/widgets/shared/auth_header.dart';
+import 'package:alai_oosai/features/auth/presentation/widgets/shared/auth_error_snack_bar.dart';
 import 'package:alai_oosai/features/auth/presentation/widgets/login/login_headline.dart';
 import 'package:alai_oosai/features/auth/presentation/widgets/login/login_send_otp_card.dart';
 import 'package:alai_oosai/features/auth/presentation/screens/login/login_otp_verification_screen.dart';
@@ -15,6 +17,7 @@ class LoginSendOtpScreen extends StatefulWidget {
 
 class LoginSendOtpScreenState extends State<LoginSendOtpScreen> {
   final TextEditingController _phoneController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -22,16 +25,33 @@ class LoginSendOtpScreenState extends State<LoginSendOtpScreen> {
     super.dispose();
   }
 
-  void _onSendOtp() {
-    if (_phoneController.text.trim().isEmpty) return;
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => LoginOtpVerificationScreen(
-          maskedPhone: _phoneController.text.trim(),
+  Future<void> _onSendOtp() async {
+    final phone = _phoneController.text.trim();
+    if (phone.isEmpty) {
+      AuthErrorSnackBar.show(context, 'Please enter your phone number.');
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      await AuthService.sendLoginOtp(phoneNumber: phone);
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => LoginOtpVerificationScreen(phoneNumber: phone),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      if (!mounted) return;
+      AuthErrorSnackBar.show(
+        context,
+        e.toString().replaceFirst('Exception: ', ''),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   void _onRegister() {
@@ -65,8 +85,9 @@ class LoginSendOtpScreenState extends State<LoginSendOtpScreen> {
                     const SizedBox(height: 32),
                     LoginSendOtpCard(
                       controller: _phoneController,
-                      onSendOtp: _onSendOtp,
+                      onSendOtp: _isLoading ? () {} : _onSendOtp,
                       onRegister: _onRegister,
+                      isLoading: _isLoading,
                     ),
                     const SizedBox(height: 40),
                   ],

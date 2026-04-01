@@ -15,7 +15,6 @@ class FamilyRegCard extends StatelessWidget {
   final ValueChanged<String?> onVillageChanged;
   final VoidCallback onSubmit;
   final bool isVerifying;
-  final String? errorText;
   final VoidCallback? onVerify;
 
   const FamilyRegCard({
@@ -29,7 +28,6 @@ class FamilyRegCard extends StatelessWidget {
     required this.onVillageChanged,
     required this.onSubmit,
     this.isVerifying = false,
-    this.errorText,
     this.onVerify,
   });
 
@@ -70,7 +68,6 @@ class FamilyRegCard extends StatelessWidget {
             controller: controller,
             focusNode: focusNode,
             isFocused: isFocused,
-            errorText: errorText,
           ),
           const SizedBox(height: 32),
           AuthSubmitButton(

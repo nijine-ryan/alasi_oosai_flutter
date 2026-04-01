@@ -7,6 +7,7 @@ import 'package:alai_oosai/features/auth/presentation/widgets/shared/otp_resend_
 import 'package:alai_oosai/features/auth/presentation/widgets/shared/otp_encryption_badge.dart';
 import 'package:alai_oosai/main.dart';
 import 'package:alai_oosai/core/constants/env_config.dart';
+import 'package:alai_oosai/features/auth/presentation/widgets/shared/auth_error_snack_bar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -26,13 +27,9 @@ class OtpVerificationScreen extends StatefulWidget {
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   bool _isLoading = false;
-  String? _error;
 
   Future<void> _verifyOtp(String otp) async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
+    setState(() => _isLoading = true);
     final url = Uri.parse('${EnvConfig.baseUrl}/auth/verify-otp');
     try {
       final response = await http.post(
@@ -44,24 +41,24 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         }),
       );
       final body = json.decode(response.body);
+      if (!mounted) return;
       if (response.statusCode >= 200 &&
           response.statusCode < 300 &&
           body['success'] == true) {
-        if (!mounted) return;
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (_) => const MainNavigationPage()),
           (route) => false,
         );
       } else {
-        setState(() {
-          _error = body['message']?.toString() ?? 'OTP verification failed';
-        });
+        AuthErrorSnackBar.show(
+          context,
+          body['message']?.toString() ?? 'OTP verification failed',
+        );
       }
     } catch (e) {
-      setState(() {
-        _error = 'Network error';
-      });
+      if (!mounted) return;
+      AuthErrorSnackBar.show(context, 'Network error. Please try again.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -141,10 +138,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     ),
                     const SizedBox(height: 40),
                     OtpInputGrid(onCompleted: _verifyOtp),
-                    if (_error != null) ...[
-                      const SizedBox(height: 16),
-                      Text(_error!, style: TextStyle(color: Colors.red)),
-                    ],
                     const SizedBox(height: 36),
                     AuthSubmitButton(
                       label: _isLoading ? 'Verifying...' : 'Verify OTP',

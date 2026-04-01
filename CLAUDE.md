@@ -130,6 +130,72 @@ Guideline:
 - Centralize endpoint/base URL edits through `EnvConfig` unless you are deliberately refactoring configuration.
 - If you add more API calls, match the existing simplicity unless the task explicitly requires an architecture upgrade.
 
+## API Response Handling Contract
+
+The backend always returns HTTP 200 with a `success` boolean for service-level outcomes. Flutter must check **both** `statusCode` and `success`.
+
+### Pattern for every API call in `AuthService`
+
+```dart
+final body = jsonDecode(response.body) as Map<String, dynamic>;
+if (response.statusCode != 200 || body['success'] != true) {
+  throw Exception(body['message']?.toString() ?? 'Fallback error message');
+}
+```
+
+Do **not** check `statusCode` alone — a 200 response can still be a failure (`success: false`).
+
+### Backend response shapes
+
+| Outcome | Shape |
+|---|---|
+| Success | `{ success: true, message: String, data?: Map }` |
+| Failure | `{ success: false, message: String, error?: Map }` |
+
+### Token storage
+
+After a successful `verifyOTP`, the JWT is stored in `AuthService.authToken` (static in-memory).
+Location: `lib/features/auth/data/auth_service.dart`.
+Token is under `body['data']['token']` in the response.
+
+> Note: This is development-stage storage. Persistent/secure storage (e.g. `flutter_secure_storage`) is a future upgrade.
+
+## Async Screen State Pattern
+
+Screens that call APIs follow this pattern:
+
+```dart
+bool _isLoading = false;
+String? _error;
+
+Future<void> _onAction() async {
+  setState(() { _isLoading = true; _error = null; });
+  try {
+    await SomeService.call();
+    if (!mounted) return;
+    // navigate or update UI
+  } catch (e) {
+    setState(() => _error = e.toString().replaceFirst('Exception: ', ''));
+  } finally {
+    if (mounted) setState(() => _isLoading = false);
+  }
+}
+```
+
+- **Always** guard `Navigator` and `setState` calls with `if (!mounted) return` / `if (mounted)` after any `await`.
+- Pass `isLoading` into card widgets to swap the submit button for a `CircularProgressIndicator`.
+- Display `_error` inline below the card, not in a dialog.
+
+## Stateful OTP Card Pattern
+
+When a widget needs to collect OTP digits and call an API on verify:
+
+- Convert the card to a `StatefulWidget`.
+- Hold `_otp` updated via `OtpInputGrid(onCompleted: (otp) => setState(() => _otp = otp))`.
+- Validate `_otp.length == 6` before calling the API.
+- Accept a `phoneNumber` param (passed from the screen) and a `onVerifySuccess` callback.
+- Own the loading and error state internally; do not bubble them to the parent screen.
+
 ## Testing and Quality Status
 
 - Linting is configured through `flutter_lints` in `analysis_options.yaml`.

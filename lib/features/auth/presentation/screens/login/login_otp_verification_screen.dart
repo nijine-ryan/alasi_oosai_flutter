@@ -6,9 +6,9 @@ import 'package:alai_oosai/features/auth/presentation/widgets/login/login_otp_ca
 import 'package:alai_oosai/main.dart';
 
 class LoginOtpVerificationScreen extends StatelessWidget {
-  final String maskedPhone;
+  final String phoneNumber;
 
-  const LoginOtpVerificationScreen({super.key, required this.maskedPhone});
+  const LoginOtpVerificationScreen({super.key, required this.phoneNumber});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,8 @@ class LoginOtpVerificationScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 32),
                     LoginOtpCard(
-                      onVerify: () {
+                      phoneNumber: phoneNumber,
+                      onVerifySuccess: () {
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(

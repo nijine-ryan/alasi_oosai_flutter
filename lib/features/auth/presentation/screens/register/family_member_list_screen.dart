@@ -6,6 +6,7 @@ import 'package:alai_oosai/features/auth/presentation/widgets/register/member_li
 import 'package:alai_oosai/features/auth/presentation/widgets/register/member_list_item.dart';
 import 'package:alai_oosai/features/auth/presentation/widgets/register/member_list_bottom_bar.dart';
 import 'package:alai_oosai/features/auth/presentation/screens/register/register_send_otp_screen.dart';
+import 'package:alai_oosai/features/auth/presentation/otp_verification_screen.dart';
 import 'package:alai_oosai/features/auth/data/family_member_service.dart';
 
 class FamilyMemberListScreen extends StatefulWidget {
@@ -63,6 +64,20 @@ class FamilyMemberListScreenState extends State<FamilyMemberListScreen> {
   void _onMemberTap(int index) {
     final member = members[index];
     if (member.status == MemberStatus.alreadyRegistered) return;
+print('member $member' );
+    if (member.status == MemberStatus.verificationPending) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => OtpVerificationScreen(
+            
+            phoneNumber: member.phone ?? '',
+          ),
+        ),
+      );
+      return;
+    }
+
     setState(() {
       if (_selectedIndex != null && _selectedIndex != index) {
         members[_selectedIndex!] = members[_selectedIndex!].copyWith(

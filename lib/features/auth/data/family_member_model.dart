@@ -1,19 +1,22 @@
-/// Two states only:
+/// Three states:
 /// - selectable: member can be tapped and selected
 /// - alreadyRegistered: member is locked, shown with "Already registered" + green "Active" badge
-enum MemberStatus { selectable, selected, alreadyRegistered }
+/// - verificationPending: member started registration but hasn't verified OTP yet
+enum MemberStatus { selectable, selected, alreadyRegistered, verificationPending }
 
 class FamilyMemberModel {
   final String id; // mapped from _id
   final String name;
   final String? imageUrl;
   final MemberStatus status;
+  final String? phone; // present when status is verificationPending
 
   FamilyMemberModel({
     required this.id,
     required this.name,
     this.imageUrl,
     required this.status,
+    this.phone,
   });
 
   factory FamilyMemberModel.fromJson(Map<String, dynamic> json) {
@@ -21,6 +24,9 @@ class FamilyMemberModel {
     switch (json['status']) {
       case 'active':
         status = MemberStatus.alreadyRegistered;
+        break;
+      case 'verification_pending':
+        status = MemberStatus.verificationPending;
         break;
       case 'not_registered':
       default:
@@ -30,8 +36,9 @@ class FamilyMemberModel {
     return FamilyMemberModel(
       id: json['_id'] as String,
       name: json['name'] as String,
-      imageUrl: json['image_url'] as String?, // null if not present
+      imageUrl: json['image_url'] as String?,
       status: status,
+      phone: json['phone'] as String?,
     );
   }
 
@@ -40,13 +47,20 @@ class FamilyMemberModel {
     String? name,
     String? imageUrl,
     MemberStatus? status,
+    String? phone,
   }) {
     return FamilyMemberModel(
       id: id ?? this.id,
       name: name ?? this.name,
       imageUrl: imageUrl ?? this.imageUrl,
       status: status ?? this.status,
+      phone: phone ?? this.phone,
     );
+  }
+
+@override
+  String toString() {
+        return 'FamilyMemberModel(name: $name, phoneNumber: $phone, id: $id,)';
   }
 }
 

@@ -9,6 +9,7 @@ import 'package:alai_oosai/features/auth/presentation/widgets/register/send_otp_
 import 'package:alai_oosai/features/auth/presentation/widgets/register/send_otp_trust_message.dart';
 import 'package:alai_oosai/features/auth/presentation/widgets/register/send_otp_footer_badge.dart';
 import 'package:alai_oosai/features/auth/presentation/otp_verification_screen.dart';
+import 'package:alai_oosai/features/auth/presentation/widgets/shared/auth_error_snack_bar.dart';
 
 class RegisterSendOtpScreen extends StatefulWidget {
   final List<FamilyMemberModel> selectedMembers;
@@ -31,18 +32,14 @@ class RegisterSendOtpScreen extends StatefulWidget {
 class RegisterSendOtpScreenState extends State<RegisterSendOtpScreen> {
   final TextEditingController _phoneController = TextEditingController();
   bool _isLoading = false;
-  String? _errorText;
 
   void _onSendOtp() async {
     final phone = _phoneController.text.trim();
     if (phone.isEmpty) {
-      setState(() => _errorText = 'Please enter a phone number.');
+      AuthErrorSnackBar.show(context, 'Please enter a phone number.');
       return;
     }
-    setState(() {
-      _isLoading = true;
-      _errorText = null;
-    });
+    setState(() => _isLoading = true);
     try {
       await AuthService.sendOtp(
         phoneNumber: phone,
@@ -50,9 +47,7 @@ class RegisterSendOtpScreenState extends State<RegisterSendOtpScreen> {
         villageId: widget.villageId,
         userId: widget.userId,
       );
-
-      print('OTP sent successfully to $phone'); // Debug print
-      // Optionally handle navigation or success UI here
+      if (!mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -60,9 +55,13 @@ class RegisterSendOtpScreenState extends State<RegisterSendOtpScreen> {
         ),
       );
     } catch (e) {
-      setState(() => _errorText = 'Failed to send OTP.');
+      if (!mounted) return;
+      AuthErrorSnackBar.show(
+        context,
+        e.toString().replaceFirst('Exception: ', ''),
+      );
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -133,17 +132,6 @@ class RegisterSendOtpScreenState extends State<RegisterSendOtpScreen> {
                     ),
                     const SizedBox(height: 28),
                     SendOtpPhoneInput(controller: _phoneController),
-                    if (_errorText != null) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        _errorText!,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.error,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
                     const SizedBox(height: 18),
                     const SendOtpTrustMessage(),
                     const SizedBox(height: 32),

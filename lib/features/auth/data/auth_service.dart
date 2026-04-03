@@ -4,6 +4,7 @@ import 'package:alai_oosai/core/constants/env_config.dart';
 
 class AuthService {
   static String? authToken;
+  static String? userName;
 
   static Future<void> sendOtp({
     required String phoneNumber,
@@ -62,5 +63,13 @@ class AuthService {
       throw Exception(body['message']?.toString() ?? 'Invalid OTP');
     }
     authToken = body['data']['token'] as String?;
+    if (authToken != null) {
+      final parts = authToken!.split('.');
+      if (parts.length == 3) {
+        final padded = base64Url.normalize(parts[1]);
+        final decoded = jsonDecode(utf8.decode(base64Url.decode(padded))) as Map<String, dynamic>;
+        userName = decoded['name'] as String?;
+      }
+    }
   }
 }

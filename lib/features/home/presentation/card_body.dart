@@ -9,6 +9,7 @@ class CardBody extends StatelessWidget {
   final bool isPressed;
   final VoidCallback onButtonTapDown;
   final VoidCallback onButtonTapUp;
+  final VoidCallback? onButtonTap;
 
   const CardBody({
     super.key,
@@ -16,6 +17,7 @@ class CardBody extends StatelessWidget {
     required this.isPressed,
     required this.onButtonTapDown,
     required this.onButtonTapUp,
+    this.onButtonTap,
   });
 
   @override
@@ -25,10 +27,8 @@ class CardBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Tag chip
           TagChip(label: event.tag, color: event.tagColor),
           const SizedBox(height: 10),
-          // Title
           Text(
             event.title,
             style: const TextStyle(
@@ -39,7 +39,6 @@ class CardBody extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          // Description
           Text(
             event.description,
             maxLines: 2,
@@ -51,40 +50,40 @@ class CardBody extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          // Footer row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CardFooter(event: event),
-              // Action button
-              GestureDetector(
-                onTapDown: (_) => onButtonTapDown(),
-                onTapUp: (_) => onButtonTapUp(),
-                onTapCancel: onButtonTapUp,
-                onTap: () {},
-                child: AnimatedScale(
-                  scale: isPressed ? 0.95 : 1.0,
-                  duration: const Duration(milliseconds: 100),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 22,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: event.buttonColor,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      event.buttonLabel,
-                      style: const TextStyle(
-                        color: AppColors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13,
+              if (event.buttonLabel.isNotEmpty)
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTapDown: (_) => onButtonTapDown(),
+                  onTapUp: (_) => onButtonTapUp(),
+                  onTapCancel: onButtonTapUp,
+                  onTap: onButtonTap,
+                  child: AnimatedScale(
+                    scale: isPressed ? 0.95 : 1.0,
+                    duration: const Duration(milliseconds: 100),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 22,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: event.buttonColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        event.buttonLabel,
+                        style: const TextStyle(
+                          color: AppColors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
         ],

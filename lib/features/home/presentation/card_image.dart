@@ -72,6 +72,7 @@ class CardImage extends StatelessWidget {
             right: 12,
             child: GestureDetector(
               onTap: onFavTap,
+              behavior: HitTestBehavior.opaque,
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(

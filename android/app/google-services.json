@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "796916361200",
+    "project_id": "oosai2926",
+    "storage_bucket": "oosai2926.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:796916361200:android:90e7f7cdbedc7f46b09f35",
+        "android_client_info": {
+          "package_name": "com.example.alai_oosai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJ8Z60XZ7ofL4R3hLuQ9hSBi3BjEiUFUQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:alai_oosai/core/constants/app_constants.dart';
 
 class CustomSearchBar extends StatelessWidget {
-  const CustomSearchBar({super.key});
+  final ValueChanged<String>? onChanged;
+
+  const CustomSearchBar({super.key, this.onChanged});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,13 +29,14 @@ class CustomSearchBar extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: TextField(
+              onChanged: onChanged,
               style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.slate900,
                 height: 1.2,
               ),
               decoration: const InputDecoration(
-                hintText: 'Search initiatives...',
+                hintText: 'Search events...',
                 hintStyle: TextStyle(
                   color: AppColors.slate400,
                   fontSize: 14,

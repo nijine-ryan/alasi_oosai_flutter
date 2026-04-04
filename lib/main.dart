@@ -4,8 +4,17 @@ import 'package:alai_oosai/features/auth/presentation/screens/login/login_send_o
 import 'package:alai_oosai/features/announcement/presentation/announcement_screen.dart';
 import 'package:alai_oosai/features/home/presentation/home_page.dart';
 import 'package:alai_oosai/features/report/presentation/screens/reports_screen.dart';
+import 'package:alai_oosai/services/notification_service.dart';
 
-void main() {
+/// Global navigator key — allows non-widget code (e.g. NotificationService)
+/// to push routes without a BuildContext.
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Initialize Firebase and local notifications.
+  // Gracefully no-ops if firebase_options.dart has not been configured yet.
+  await NotificationService.initialize();
   runApp(const MyApp());
 }
 
@@ -15,6 +24,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: 'Alai Oosai',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

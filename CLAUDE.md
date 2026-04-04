@@ -79,13 +79,58 @@ Implication:
 
 ### Announcement
 
-- Announcement content is currently static.
-- Models live in `data/` and presentation renders grouped media items.
-- Some items reference remote image/video URLs directly in source.
+- Announcement data is now API-backed via `AnnouncementService.fetchAnnouncements()`.
+- Models live in `data/announcement_model.dart`. `AnnouncementModel.fromApi()` parses the API response.
+- Items are grouped by date and rendered by `AnnouncementGroupSection`.
+- Real-time updates arrive via Socket.IO (`announcement:new` event) and trigger a full API refresh.
 
-Implication:
+#### Date / ordering rules (resolved in prior sessions — do not regress)
 
-- Avoid treating announcement data as production-backed unless you add a real data source.
+- The badge date and grouping label must come from **`createdAt`** (when the record was created), **not** `time` (which is the optional scheduled/event date and may be a future date).
+- The backend `format()` in `announcement.service.ts` must include `createdAt` in its return value. If it is missing from the API response, `fromApi` falls back to `time`.
+- List order: **oldest first** (ascending `createdAt`). The most recent announcement appears at the bottom. Client-side sort in `_groupByDate()` is the source of truth — do not rely solely on API order.
+
+### Notification
+
+- `NotificationService` lives at `lib/services/notification_service.dart` (not inside a feature folder).
+- It is a static-method-only class — no instances.
+- Initialization is split into two independent layers:
+
+  **Layer 1 — Local notifications (always runs, no Firebase dependency)**
+  - `_setupLocalNotifications()` initialises `FlutterLocalNotificationsPlugin` and creates the Android O+ channel.
+  - `AndroidFlutterLocalNotificationsPlugin.requestNotificationsPermission()` requests Android 13+ POST_NOTIFICATIONS permission.
+  - Both must run unconditionally before the Firebase try block.
+
+  **Layer 2 — Firebase / FCM (runs only if Firebase is configured)**
+  - Wrapped in `try/catch` because `firebase_options.dart` may be a stub if `flutterfire configure` has not been run.
+  - If Firebase init throws, `_initialized` stays `false` and all FCM features (token registration, topic subscription) are silently skipped.
+  - `_requestPermissions()` (iOS FCM dialog) must stay inside this block — it requires Firebase.
+
+- **Critical ordering rule:** `_setupLocalNotifications()` must be called **before** the Firebase `try` block. If it is inside the try block and Firebase throws, the local notifications plugin is never initialised and `show()` silently does nothing.
+
+#### Android requirements
+
+- `android/app/src/main/AndroidManifest.xml` must declare `<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>`. Without it, Android 13+ silently drops all local notifications even if the plugin is initialised.
+- `android/app/build.gradle.kts` must have `isCoreLibraryDesugaringEnabled = true` in `compileOptions` and `coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")` in `dependencies`. `flutter_local_notifications` requires this; the build fails without it.
+
+#### Notification tap → screen navigation
+
+- `lib/main.dart` exports `final GlobalKey<NavigatorState> navigatorKey` and passes it to `MaterialApp(navigatorKey: navigatorKey)`.
+- `_onNotificationTapped` is a top-level function (annotated `@pragma('vm:entry-point')`) that calls `navigatorKey.currentState?.push(MaterialPageRoute(builder: (_) => const AnnouncementsScreen()))`.
+- It is wired into `_localNotifications.initialize(onDidReceiveNotificationResponse: _onNotificationTapped)`.
+- Do not use a lambda here — the handler must be a top-level or static function for background isolation compatibility.
+
+#### Post-login sequence
+
+After a successful OTP verification (`login_otp_card.dart`), these three calls are fire-and-forget (not awaited):
+1. `NotificationService.registerDeviceToken()` — registers FCM token with backend (`POST /users/fcm-token`). No-ops if `_initialized` is false.
+2. `NotificationService.subscribeToVillage(villageId)` — subscribes to FCM topic `village_<id>`. No-ops if `_initialized` is false.
+3. `SocketService.connect()` — opens the Socket.IO connection for real-time events.
+
+#### Pending infrastructure (not yet done)
+
+- `flutterfire configure` has not been run. `lib/firebase_options.dart` is still a stub. FCM token registration and topic subscription are disabled until this is completed.
+- `FIREBASE_SERVICE_ACCOUNT` env var is not set on the backend. Server-side FCM push (`FCM disabled — skipping push`) is disabled until the service account JSON is configured.
 
 ### Report
 

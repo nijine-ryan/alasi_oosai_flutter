@@ -3,7 +3,9 @@ import 'package:alai_oosai/core/constants/app_constants.dart';
 import 'announcements_header_icon_button.dart';
 
 class AnnouncementsHeader extends StatelessWidget {
-  const AnnouncementsHeader({super.key});
+  final bool hasNew;
+
+  const AnnouncementsHeader({super.key, this.hasNew = false});
 
   @override
   Widget build(BuildContext context) {
@@ -33,18 +35,19 @@ class AnnouncementsHeader extends StatelessWidget {
                 icon: Icons.notifications_outlined,
                 onTap: () {},
               ),
-              Positioned(
-                top: 10,
-                right: 10,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
+              if (hasNew)
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ],

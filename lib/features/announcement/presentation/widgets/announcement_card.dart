@@ -15,16 +15,18 @@ class AnnouncementCard extends StatelessWidget {
       case AnnouncementType.video:
         return VideoThumbnail(
           imageUrl: a.mediaUrl!,
-          duration: a.videoDuration!,
+          duration: a.videoDuration ?? '',
         );
       case AnnouncementType.audio:
         return AnnouncementAudioPlayer(
-          currentTime: a.audioCurrentTime!,
-          totalTime: a.audioTotalTime!,
-          progress: a.audioProgress!,
+          currentTime: a.audioCurrentTime ?? '0:00',
+          totalTime: a.audioTotalTime ?? '0:00',
+          progress: a.audioProgress ?? 0.0,
         );
       case AnnouncementType.image:
         return AnnouncementImageMedia(imageUrl: a.mediaUrl!);
+      case AnnouncementType.none:
+        return const SizedBox.shrink();
     }
   }
 
@@ -67,9 +69,12 @@ class AnnouncementCard extends StatelessWidget {
                 height: 1.55,
               ),
             ),
-            const SizedBox(height: 12),
-            buildMediaSection(announcement),
-            const SizedBox(height: 10),
+            if (announcement.type != AnnouncementType.none) ...[
+              const SizedBox(height: 12),
+              buildMediaSection(announcement),
+              const SizedBox(height: 10),
+            ] else
+              const SizedBox(height: 8),
             Align(
               alignment: Alignment.centerRight,
               child: Text(

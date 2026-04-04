@@ -6,6 +6,8 @@ import 'package:alai_oosai/features/auth/presentation/widgets/shared/otp_input_g
 import 'package:alai_oosai/features/auth/presentation/widgets/shared/otp_resend_row.dart';
 import 'package:alai_oosai/features/auth/presentation/widgets/login/login_encrypted_badge.dart';
 import 'package:alai_oosai/features/auth/presentation/widgets/shared/auth_error_snack_bar.dart';
+import 'package:alai_oosai/services/notification_service.dart';
+import 'package:alai_oosai/services/socket_service.dart';
 
 /// OTP verification card for the login flow.
 /// Collects OTP, calls /auth/verify-otp, and invokes [onVerifySuccess] on success.
@@ -45,6 +47,14 @@ class _LoginOtpCardState extends State<LoginOtpCard> {
         phoneNumber: widget.phoneNumber,
         otp: int.parse(_otp),
       );
+      // Post-login: register device token, subscribe to village topic, connect socket.
+      // Fire-and-forget — do not await so navigation is not delayed.
+      NotificationService.registerDeviceToken();
+      if (AuthService.villageId != null) {
+        NotificationService.subscribeToVillage(AuthService.villageId!);
+        NotificationService.subscribeToReportTopic(AuthService.villageId!);
+      }
+      SocketService.connect();
       if (!mounted) return;
       widget.onVerifySuccess();
     } catch (e) {

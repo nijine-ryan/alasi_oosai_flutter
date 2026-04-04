@@ -5,6 +5,8 @@ import 'package:alai_oosai/core/constants/env_config.dart';
 class AuthService {
   static String? authToken;
   static String? userName;
+  /// The village_id extracted from the JWT. Populated after a successful login.
+  static String? villageId;
 
   static Future<void> sendOtp({
     required String phoneNumber,
@@ -69,6 +71,7 @@ class AuthService {
         final padded = base64Url.normalize(parts[1]);
         final decoded = jsonDecode(utf8.decode(base64Url.decode(padded))) as Map<String, dynamic>;
         userName = decoded['name'] as String?;
+        villageId = decoded['village_id'] as String?;
       }
     }
   }

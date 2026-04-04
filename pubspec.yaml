@@ -36,6 +36,16 @@ dependencies:
   cupertino_icons: ^1.0.8
   http: ^0.13.6
 
+  # Firebase — requires `flutterfire configure` to generate firebase_options.dart
+  firebase_core: ^3.8.0
+  firebase_messaging: ^15.1.5
+
+  # Local notifications (shown when app is in foreground + from socket events)
+  flutter_local_notifications: ^18.0.1
+
+  # Socket.IO real-time connection
+  socket_io_client: ^2.0.3+1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

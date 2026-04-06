@@ -1,42 +1,33 @@
 // ─── Header ───────────────────────────────────────────────────────────────────
 import 'package:flutter/material.dart';
-import 'package:alai_oosai/core/constants/app_constants.dart';
-import 'package:alai_oosai/widgets/notification_button.dart';
 
 class AppHeader extends StatelessWidget {
   const AppHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
-      color: AppColors.white.withAlpha(204), // 80% opacity
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+      color: cs.surface.withAlpha(204), // 80% opacity
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withAlpha(26),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(
-              Icons.volunteer_activism,
-              color: AppColors.primary,
-              size: 22,
+          Builder(
+            builder: (ctx) => IconButton(
+              icon: Icon(Icons.menu, color: cs.onSurface, size: 26),
+              onPressed: () => Scaffold.of(ctx).openDrawer(),
             ),
           ),
-          const SizedBox(width: 12),
-          const Text(
+          const SizedBox(width: 4),
+          Text(
             'Community Trust',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
-              color: AppColors.slate900,
+              color: cs.onSurface,
               letterSpacing: -0.3,
             ),
           ),
-          const Spacer(),
-          NotificationButton(),
         ],
       ),
     );

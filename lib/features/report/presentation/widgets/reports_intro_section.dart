@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:alai_oosai/core/constants/app_constants.dart';
 
 class ReportsIntroSection extends StatelessWidget {
   const ReportsIntroSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    final cs = Theme.of(context).colorScheme;
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -14,16 +14,16 @@ class ReportsIntroSection extends StatelessWidget {
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w800,
-            color: AppColors.slate900,
+            color: cs.onSurface,
             letterSpacing: -0.3,
           ),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Text(
           'Detailed accounts of community fund allocations and project expenditures.',
           style: TextStyle(
             fontSize: 13,
-            color: AppColors.slate500,
+            color: cs.onSurfaceVariant,
             height: 1.5,
           ),
         ),

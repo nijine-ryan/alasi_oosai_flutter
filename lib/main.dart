@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:alai_oosai/core/constants/app_constants.dart';
+import 'package:alai_oosai/core/theme/theme_notifier.dart';
+import 'package:alai_oosai/features/auth/data/auth_service.dart';
 import 'package:alai_oosai/features/auth/presentation/screens/login/login_send_otp_screen.dart';
 import 'package:alai_oosai/features/announcement/presentation/announcement_screen.dart';
 import 'package:alai_oosai/features/home/presentation/home_page.dart';
 import 'package:alai_oosai/features/report/presentation/screens/reports_screen.dart';
 import 'package:alai_oosai/services/notification_service.dart';
+import 'package:alai_oosai/services/socket_service.dart';
 
 /// Global navigator key — allows non-widget code (e.g. NotificationService)
 /// to push routes without a BuildContext.
@@ -23,17 +26,75 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navigatorKey,
-      title: 'Alai Oosai',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
-        fontFamily: 'Roboto',
-        useMaterial3: true,
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: appThemeMode,
+      builder: (context, mode, child) => MaterialApp(
+        navigatorKey: navigatorKey,
+        title: 'Alai Oosai',
+        debugShowCheckedModeBanner: false,
+        themeMode: mode,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
+          fontFamily: 'Roboto',
+          useMaterial3: true,
+        ),
+        darkTheme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: AppColors.primary,
+            brightness: Brightness.dark,
+          ),
+          fontFamily: 'Roboto',
+          useMaterial3: true,
+        ),
+        home: const _AppRoot(),
       ),
-      // Auth flow starts here — MainNavigationPage is no longer the root
-      home: const LoginSendOtpScreen(),
+    );
+  }
+}
+
+/// Resolves the initial route by checking for a persisted session.
+/// Shows a neutral splash while the async check runs, then replaces itself.
+class _AppRoot extends StatefulWidget {
+  const _AppRoot();
+
+  @override
+  State<_AppRoot> createState() => _AppRootState();
+}
+
+class _AppRootState extends State<_AppRoot> {
+  @override
+  void initState() {
+    super.initState();
+    _resolve();
+  }
+
+  Future<void> _resolve() async {
+    final restored = await AuthService.tryRestoreSession();
+    if (!mounted) return;
+
+    if (restored) {
+      // Re-connect real-time services so the session is fully live.
+      if (AuthService.villageId != null) {
+        NotificationService.registerDeviceToken();
+        NotificationService.subscribeToVillage(AuthService.villageId!);
+        NotificationService.subscribeToReportTopic(AuthService.villageId!);
+      }
+      SocketService.connect();
+    }
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) =>
+            restored ? const MainNavigationPage() : const LoginSendOtpScreen(),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Minimal splash shown for the fraction of a second during the storage read.
+    return const Scaffold(
+      body: Center(child: CircularProgressIndicator()),
     );
   }
 }

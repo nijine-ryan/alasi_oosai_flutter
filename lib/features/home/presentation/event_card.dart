@@ -3,7 +3,6 @@ import 'package:alai_oosai/features/home/data/models.dart';
 import 'package:alai_oosai/features/home/presentation/card_body.dart';
 import 'package:alai_oosai/features/home/presentation/card_image.dart';
 import 'package:flutter/material.dart';
-import 'package:alai_oosai/core/constants/app_constants.dart';
 
 class EventCard extends StatefulWidget {
   final EventModel event;
@@ -48,9 +47,9 @@ class _EventCardState extends State<EventCard> {
       onTap: widget.onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.slate100),
+          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withAlpha(18),

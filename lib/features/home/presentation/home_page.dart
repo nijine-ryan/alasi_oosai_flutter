@@ -4,6 +4,7 @@ import 'package:alai_oosai/features/home/data/event_service.dart';
 import 'package:alai_oosai/features/home/data/models.dart';
 import 'package:alai_oosai/features/home/presentation/events_section.dart';
 import 'package:alai_oosai/features/home/presentation/hero_section.dart';
+import 'package:alai_oosai/features/home/presentation/home_drawer.dart';
 import 'package:alai_oosai/widgets/app_header.dart';
 import 'package:flutter/material.dart';
 
@@ -61,7 +62,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      drawer: const HomeDrawer(),
       body: SafeArea(
         bottom: false,
         child: Column(

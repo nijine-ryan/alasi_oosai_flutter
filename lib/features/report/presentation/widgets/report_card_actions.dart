@@ -27,8 +27,8 @@ class ReportCardActions extends StatelessWidget {
             child: ReportActionButton(
               label: 'Download',
               icon: Icons.download_outlined,
-              backgroundColor: AppColors.slate100,
-              foregroundColor: AppColors.slate700,
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              foregroundColor: Theme.of(context).colorScheme.onSurface,
               onTap: onDownload,
             ),
           ),

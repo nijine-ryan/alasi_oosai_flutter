@@ -46,6 +46,9 @@ dependencies:
   # Socket.IO real-time connection
   socket_io_client: ^2.0.3+1
 
+  # Secure persistent storage — backed by Android Keystore / iOS Keychain
+  flutter_secure_storage: ^9.2.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

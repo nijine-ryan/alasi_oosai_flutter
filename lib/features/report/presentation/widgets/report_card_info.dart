@@ -9,6 +9,7 @@ class ReportCardInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -38,10 +39,10 @@ class ReportCardInfo extends StatelessWidget {
                   report.title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.slate900,
+                    color: cs.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -49,27 +50,27 @@ class ReportCardInfo extends StatelessWidget {
                   report.description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.slate600,
+                    color: cs.onSurfaceVariant,
                     height: 1.45,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.picture_as_pdf_outlined,
                       size: 14,
-                      color: AppColors.slate500,
+                      color: cs.onSurfaceVariant,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       'PDF Document • ${report.fileSize}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.slate500,
+                        color: cs.onSurfaceVariant,
                       ),
                     ),
                   ],

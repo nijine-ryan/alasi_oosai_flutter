@@ -22,13 +22,15 @@ class CardImage extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image.network(
-            event.imageUrl,
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(color: AppColors.slate200),
-            loadingBuilder: (_, child, progress) =>
-                progress == null ? child : Container(color: AppColors.slate200),
-          ),
+          event.imageUrl.isNotEmpty
+              ? Image.network(
+                  event.imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => _imagePlaceholder(),
+                  loadingBuilder: (_, child, progress) =>
+                      progress == null ? child : _imagePlaceholder(),
+                )
+              : _imagePlaceholder(),
           // Date badge
           Positioned(
             top: 16,
@@ -94,4 +96,11 @@ class CardImage extends StatelessWidget {
       ),
     );
   }
+
+  Widget _imagePlaceholder() => Container(
+        color: AppColors.slate200,
+        child: const Center(
+          child: Icon(Icons.image_outlined, size: 40, color: AppColors.slate400),
+        ),
+      );
 }

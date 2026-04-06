@@ -1,3 +1,5 @@
+import 'package:alai_oosai/core/constants/env_config.dart';
+
 class EventDetailUser {
   final String id;
   final String name;
@@ -61,7 +63,7 @@ class EventDetailModel {
       isJoined: json['isJoined'] as bool? ?? false,
       isWishlisted: json['isWishlisted'] as bool? ?? false,
       ctaText: json['ctaText'] as String? ?? 'Join',
-      image: json['image'] as String?,
+      image: EnvConfig.normalizeUrl(json['image'] as String?),
     );
   }
 

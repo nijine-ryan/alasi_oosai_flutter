@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:alai_oosai/core/constants/app_constants.dart';
+import 'package:alai_oosai/core/constants/env_config.dart';
 
 class EventModel {
   final String id;
@@ -53,7 +54,7 @@ class EventModel {
 
     return EventModel(
       id: json['id'] as String? ?? '',
-      imageUrl: json['image'] as String? ?? '',
+      imageUrl: EnvConfig.normalizeUrl(json['image'] as String?) ?? '',
       month: month,
       day: day,
       tag: tag,

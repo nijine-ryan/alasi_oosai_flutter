@@ -2,7 +2,6 @@ import 'package:alai_oosai/features/report/data/report_model.dart';
 import 'package:alai_oosai/features/report/presentation/widgets/report_card_actions.dart';
 import 'package:alai_oosai/features/report/presentation/widgets/report_card_info.dart';
 import 'package:flutter/material.dart';
-import 'package:alai_oosai/core/constants/app_constants.dart';
 
 class ReportCard extends StatelessWidget {
   final ReportModel report;
@@ -18,11 +17,12 @@ class ReportCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.slate200),
+        border: Border.all(color: cs.outlineVariant),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withAlpha(10),

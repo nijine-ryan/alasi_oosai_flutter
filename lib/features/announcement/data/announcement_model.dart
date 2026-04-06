@@ -1,3 +1,5 @@
+import 'package:alai_oosai/core/constants/env_config.dart';
+
 enum AnnouncementType {
   video,
   audio,
@@ -79,13 +81,13 @@ class AnnouncementModel {
     String? mediaUrl;
     if (json['video'] != null) {
       type = AnnouncementType.video;
-      mediaUrl = json['video'] as String?;
+      mediaUrl = EnvConfig.normalizeUrl(json['video'] as String?);
     } else if (json['image'] != null) {
       type = AnnouncementType.image;
-      mediaUrl = json['image'] as String?;
+      mediaUrl = EnvConfig.normalizeUrl(json['image'] as String?);
     } else if (json['voiceNote'] != null) {
       type = AnnouncementType.audio;
-      mediaUrl = json['voiceNote'] as String?;
+      mediaUrl = EnvConfig.normalizeUrl(json['voiceNote'] as String?);
     } else {
       type = AnnouncementType.none;
     }

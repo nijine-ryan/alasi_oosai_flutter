@@ -2,7 +2,6 @@ import 'package:alai_oosai/features/announcement/data/announcement_model.dart';
 import 'package:alai_oosai/features/announcement/presentation/widgets/announcement_audio_player.dart';
 import 'package:alai_oosai/features/announcement/presentation/widgets/announcement_image_media.dart';
 import 'package:flutter/material.dart';
-import 'package:alai_oosai/core/constants/app_constants.dart';
 import 'video_thumbnail.dart';
 
 class AnnouncementCard extends StatelessWidget {
@@ -32,11 +31,12 @@ class AnnouncementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.slate100),
+        border: Border.all(color: cs.outlineVariant),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withAlpha(10),
@@ -53,19 +53,19 @@ class AnnouncementCard extends StatelessWidget {
           children: [
             Text(
               announcement.title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
-                color: AppColors.slate900,
+                color: cs.onSurface,
                 height: 1.3,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               announcement.description,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
-                color: AppColors.slate600,
+                color: cs.onSurfaceVariant,
                 height: 1.55,
               ),
             ),
@@ -79,10 +79,10 @@ class AnnouncementCard extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: Text(
                 announcement.time.toUpperCase(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.slate400,
+                  color: cs.outline,
                   letterSpacing: 0.8,
                 ),
               ),

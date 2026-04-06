@@ -13,14 +13,32 @@ class AnnouncementImageMedia extends StatelessWidget {
       child: SizedBox(
         height: 160,
         width: double.infinity,
-        child: Image.network(
-          imageUrl,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => Container(color: AppColors.slate200),
-          loadingBuilder: (_, child, progress) =>
-              progress == null ? child : Container(color: AppColors.slate200),
-        ),
+        child: imageUrl.isNotEmpty
+            ? Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => _placeholder(),
+                loadingBuilder: (_, child, progress) => progress == null
+                    ? child
+                    : Container(
+                        color: AppColors.slate200,
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.slate400,
+                          ),
+                        ),
+                      ),
+              )
+            : _placeholder(),
       ),
     );
   }
+
+  Widget _placeholder() => Container(
+        color: AppColors.slate200,
+        child: const Center(
+          child: Icon(Icons.image_outlined, size: 36, color: AppColors.slate400),
+        ),
+      );
 }

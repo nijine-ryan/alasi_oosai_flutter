@@ -5,7 +5,6 @@ import 'package:alai_oosai/features/report/presentation/widgets/reports_header.d
 import 'package:alai_oosai/features/report/presentation/widgets/reports_intro_section.dart';
 import 'package:alai_oosai/services/socket_service.dart';
 import 'package:flutter/material.dart';
-import 'package:alai_oosai/core/constants/app_constants.dart';
 
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
@@ -56,7 +55,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         bottom: false,
         child: Column(

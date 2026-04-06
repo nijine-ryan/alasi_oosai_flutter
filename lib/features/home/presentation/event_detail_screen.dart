@@ -251,12 +251,11 @@ class _EventHero extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                   // Image or placeholder
-                  image != null
+                  image != null && image!.isNotEmpty
                       ? Image.network(
                           image!,
                           fit: BoxFit.cover,
-                          errorBuilder: (ctx, err, stack) =>
-                              _placeholder(),
+                          errorBuilder: (context, error, stackTrace) => _placeholder(),
                           loadingBuilder: (_, child, progress) =>
                               progress == null ? child : _placeholder(),
                         )

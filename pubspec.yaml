@@ -49,6 +49,15 @@ dependencies:
   # Secure persistent storage — backed by Android Keystore / iOS Keychain
   flutter_secure_storage: ^9.2.2
 
+  # Open URLs in external app or browser
+  url_launcher: ^6.3.0
+
+  # Access platform-specific file system directories for downloads
+  path_provider: ^2.1.4
+
+  # Native in-app PDF rendering (Android: PdfRenderer, iOS: PDFKit)
+  flutter_pdfview: ^1.3.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

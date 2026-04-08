@@ -38,7 +38,11 @@ class ProfileService {
   static Future<UserProfile> fetchProfile() async {
     final id = AuthService.userId;
     if (id == null || id.isEmpty) throw Exception('User ID not available');
-    final uri = Uri.parse('${EnvConfig.baseUrl}/users/$id');
+    final villageId = AuthService.villageId;
+    if (villageId == null || villageId.isEmpty) throw Exception('Village ID not available');
+    final uri = Uri.parse('${EnvConfig.baseUrl}/users/$id').replace(
+      queryParameters: {'village_id': villageId},
+    );
     final response = await http.get(uri, headers: _headers);
     final body = jsonDecode(response.body) as Map<String, dynamic>;
     if (response.statusCode != 200) {
@@ -54,7 +58,11 @@ class ProfileService {
   }) async {
     final id = AuthService.userId;
     if (id == null || id.isEmpty) throw Exception('User ID not available');
-    final uri = Uri.parse('${EnvConfig.baseUrl}/users/$id');
+    final villageId = AuthService.villageId;
+    if (villageId == null || villageId.isEmpty) throw Exception('Village ID not available');
+    final uri = Uri.parse('${EnvConfig.baseUrl}/users/$id').replace(
+      queryParameters: {'village_id': villageId},
+    );
     final payload = <String, dynamic>{'name': name};
     if (email != null && email.isNotEmpty) payload['email'] = email;
     final response = await http.patch(

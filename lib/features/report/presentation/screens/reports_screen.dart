@@ -1,10 +1,12 @@
 import 'package:alai_oosai/features/report/data/report_model.dart';
 import 'package:alai_oosai/features/report/data/report_service.dart';
+import 'package:alai_oosai/features/report/presentation/screens/pdf_viewer_screen.dart';
 import 'package:alai_oosai/features/report/presentation/widgets/report_card.dart';
 import 'package:alai_oosai/features/report/presentation/widgets/reports_header.dart';
 import 'package:alai_oosai/features/report/presentation/widgets/reports_intro_section.dart';
 import 'package:alai_oosai/services/socket_service.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
@@ -33,6 +35,47 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
   void _onSocketReport(Map<String, dynamic> data) {
     _fetchReports();
+  }
+
+  void _showSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  void _viewPdf(ReportModel report) {
+    if (report.pdfUrl.isEmpty) {
+      _showSnackBar('PDF URL is not available');
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PdfViewerScreen(
+          url: report.pdfUrl,
+          title: report.title,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _downloadPdf(ReportModel report) async {
+    if (report.pdfUrl.isEmpty) {
+      _showSnackBar('PDF URL is not available');
+      return;
+    }
+    try {
+      final uri = Uri.parse(report.pdfUrl);
+      // Hands the URL to Android's Download Manager / iOS browser.
+      // Static files on the backend require no auth header, so the system
+      // downloader can fetch them directly and save to the Downloads folder.
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      _showSnackBar(
+        'Download failed: ${e.toString().replaceFirst('Exception: ', '')}',
+      );
+    }
   }
 
   Future<void> _fetchReports() async {
@@ -103,12 +146,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 padding: const EdgeInsets.only(bottom: 16),
                 child: ReportCard(
                   report: report,
-                  onView: () {
-                    // TODO: open PDF viewer
-                  },
-                  onDownload: () {
-                    // TODO: trigger download
-                  },
+                  onView: () => _viewPdf(report),
+                  onDownload: () => _downloadPdf(report),
                 ),
               ),
             ),

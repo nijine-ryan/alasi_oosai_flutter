@@ -1,5 +1,5 @@
 class EnvConfig {
-  static const String baseUrl = 'http://172.31.178.188:3000';
+  static const String baseUrl = 'http://192.168.1.37:3000';
 
   /// Replaces a localhost origin in [url] with [baseUrl].
   /// Returns null for null or empty input.

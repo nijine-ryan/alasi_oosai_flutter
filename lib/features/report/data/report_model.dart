@@ -1,3 +1,5 @@
+import 'package:alai_oosai/core/constants/env_config.dart';
+
 class ReportModel {
   final String id;
   final String title;
@@ -29,7 +31,7 @@ class ReportModel {
       id: json['id']?.toString() ?? '',
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',
-      pdfUrl: json['pdfUrl'] as String? ?? '',
+      pdfUrl: EnvConfig.normalizeUrl(json['pdfUrl'] as String?) ?? '',
       createdAt: createdAt,
     );
   }
